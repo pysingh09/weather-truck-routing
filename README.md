@@ -2,7 +2,7 @@
 
 Pick a trip, a departure time and a load weight. The app returns three routes, samples the forecast at the truck's own ETA at every checkpoint, scores the risk with the brief's rules, and recommends one route with a plain-English reason. A 0-48 h heatmap slider shows how the weather moves along the corridor.
 
-**Live demo:** https://weather-truck-routing-five.vercel.app  ·  **API:** https://weather-truck-routing-api.onrender.com/api/health
+**Live demo:** https://weather-truck-routing-five.vercel.app  ·  **API:** https://weather-truck-routing-api-w046.onrender.com/api/health
 **Loom walkthrough:** <TBD>
 
 ![Plan view, Chicago to Denver](docs/screenshots/01-plan-desktop.png)
