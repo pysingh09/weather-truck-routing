@@ -45,7 +45,7 @@ Request flow for `POST /api/plan`:
 6. `scoring.summarize` (miles per level, average risk) and `rank_routes` (ordering + reason text).
 7. Simplify the output geometry (Douglas-Peucker, about 50 m), round to 5 decimals, return JSON (gzipped on the wire). The frontend then calls `/api/heatmap` separately so routes render first.
 
-Full request/response shapes: [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md). Original plan: [`docs/PLAN.md`](docs/PLAN.md).
+Full request/response shapes: [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md).
 
 ## Risk and recommendation logic
 
@@ -142,7 +142,7 @@ frontend/
   src/components/         TripForm, RouteCards, MapView, MapEffects, TimeSlider, Legend
   src/lib/                api, types, geojson builders, risk colors, time store
   src/mocks/              fixtures for mock mode
-docs/                     API_CONTRACT.md, PLAN.md, LOOM_SCRIPT.md, screenshots/
+docs/                     API_CONTRACT.md, screenshots/
 ```
 
 ## Deployment
