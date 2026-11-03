@@ -1,0 +1,23 @@
+# Render Blueprint — Django API (free plan).
+# Deploy: https://render.com/deploy?repo=https://github.com/pysingh09/weather-truck-routing
+services:
+  - type: web
+    name: weather-truck-routing-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install uv && uv sync --frozen --no-dev && uv run python manage.py collectstatic --noinput
+    startCommand: uv run gunicorn config.wsgi --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "0"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://weather-truck-routing-five.vercel.app,http://localhost:5173"

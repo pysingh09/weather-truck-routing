@@ -2,7 +2,7 @@
 
 Pick a trip, a departure time and a load weight. The app returns three routes, samples the forecast at the truck's own ETA at every checkpoint, scores the risk with the brief's rules, and recommends one route with a plain-English reason. A 0-48 h heatmap slider shows how the weather moves along the corridor.
 
-**Live demo:** <TBD>
+**Live demo:** https://weather-truck-routing-five.vercel.app  ·  **API:** https://weather-truck-routing-api.onrender.com/api/health
 **Loom walkthrough:** <TBD>
 
 ![Plan view, Chicago to Denver](docs/screenshots/01-plan-desktop.png)
@@ -27,7 +27,7 @@ Pick a trip, a departure time and a load weight. The app returns three routes, s
 
 ```mermaid
 flowchart LR
-  UI["React + Vite + MapLibre<br/>(Vercel)"] -->|"/api/plan, /api/heatmap, /api/geocode"| API["Django + DRF<br/>(Railway)"]
+  UI["React + Vite + MapLibre<br/>(Vercel)"] -->|"/api/plan, /api/heatmap, /api/geocode"| API["Django + DRF<br/>(Render)"]
   API --> V["Valhalla<br/>truck routing"]
   API --> O["OSRM<br/>car routing, long trips"]
   API --> P["Photon<br/>geocoding"]
@@ -111,7 +111,7 @@ UI-only demo without a backend: set `VITE_USE_MOCKS=true` in `frontend/.env` (fi
 |---|---|---|---|
 | Backend | `SECRET_KEY` | dev placeholder | Django secret key (set in production) |
 | Backend | `DEBUG` | `0` (`1` in `.env.example`) | Django debug |
-| Backend | `ALLOWED_HOSTS` | `localhost,127.0.0.1,.railway.app` | Comma-separated hosts |
+| Backend | `ALLOWED_HOSTS` | `localhost,127.0.0.1,.onrender.com` | Comma-separated hosts |
 | Backend | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Frontend origin(s) |
 | Backend | `VALHALLA_URL` | `https://valhalla1.openstreetmap.de` | Truck routing |
 | Backend | `OSRM_URL` | `https://router.project-osrm.org` | Long-trip / fill routing |
@@ -147,7 +147,7 @@ docs/                     API_CONTRACT.md, PLAN.md, LOOM_SCRIPT.md, screenshots/
 
 ## Deployment
 
-- **Backend (Railway):** root directory `backend/`; `railway.json` runs `collectstatic` then gunicorn, health check at `/api/health`. Set `SECRET_KEY`, `DEBUG=0`, `ALLOWED_HOSTS` (the Railway domain), `CORS_ALLOWED_ORIGINS` (the Vercel URL). `VALHALLA_URL`, `OSRM_URL`, `PHOTON_URL` are optional overrides.
-- **Frontend (Vercel):** root directory `frontend/`, build `pnpm build`, output `dist`; `vercel.json` rewrites to the SPA. Set `VITE_API_URL` to the Railway URL (build-time variable).
+- **Backend (Render, free plan):** `render.yaml` blueprint, root `backend/`; build `uv sync --frozen --no-dev` + `collectstatic`, start gunicorn, health check `/api/health`. Env: `SECRET_KEY` (generated), `DEBUG=0`, `ALLOWED_HOSTS=.onrender.com`, `CORS_ALLOWED_ORIGINS` (the Vercel URL). `VALHALLA_URL`, `OSRM_URL`, `PHOTON_URL` are optional overrides. The free plan sleeps after 15 min idle, so `.github/workflows/keep-warm.yml` pings `/api/health` every 10 min, and the frontend fires a warm-up request on page load.
+- **Frontend (Vercel):** root directory `frontend/`, build `pnpm build`, output `dist`; `vercel.json` rewrites to the SPA. Set `VITE_API_URL` to the Render URL (build-time variable).
 
 Time spent: <TBD>

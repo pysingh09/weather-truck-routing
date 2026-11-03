@@ -5,6 +5,12 @@ import type {
 const BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8000'
 const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === 'true'
 
+/** Fire-and-forget: wakes a sleeping free-tier backend while the user fills in the form. */
+export function warmUpBackend(): void {
+  if (USE_MOCKS) return
+  fetch(`${BASE}/api/health`).catch(() => {})
+}
+
 export class ApiError extends Error {
   field?: string
   status: number

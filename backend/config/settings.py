@@ -17,7 +17,7 @@ DEBUG = os.environ.get("DEBUG", "0").lower() in ("1", "true", "yes")
 SECRET_KEY = os.environ.get("SECRET_KEY") or (
     "dev-insecure-key" if DEBUG else "change-me-" + "x" * 40
 )
-ALLOWED_HOSTS = _list("ALLOWED_HOSTS", "localhost,127.0.0.1,.railway.app")
+ALLOWED_HOSTS = _list("ALLOWED_HOSTS", "localhost,127.0.0.1,.onrender.com")
 CORS_ALLOWED_ORIGINS = _list("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
 VALHALLA_URL = os.environ.get("VALHALLA_URL", "https://valhalla1.openstreetmap.de")
 OSRM_URL = os.environ.get("OSRM_URL", "https://router.project-osrm.org")
