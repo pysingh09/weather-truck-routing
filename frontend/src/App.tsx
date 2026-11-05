@@ -7,6 +7,7 @@ import Legend from './components/Legend'
 import Toast from './components/Toast'
 import { ApiError, fetchHeatmap, planTrip } from './lib/api'
 import { setPlaying, setTime } from './lib/timeStore'
+import { toSearch } from './lib/urlParams'
 import type { PlanRequest, PlanResponse } from './lib/types'
 
 // MapLibre (~1 MB) loads as a separate chunk so the form and shell paint first.
@@ -45,7 +46,12 @@ export default function App() {
 
   const closeToast = useCallback(() => setToast(null), [])
   const plan = planned?.plan ?? null
-  const onSubmit = (req: PlanRequest) => { mutation.mutate(req); setSheetOpen(true) }
+  const onSubmit = (req: PlanRequest) => {
+    mutation.mutate(req)
+    setSheetOpen(true)
+    // Keep the trip in the URL so it can be shared or reloaded (?go=1 to auto-plan).
+    window.history.replaceState(null, '', toSearch(req))
+  }
 
   return (
     <div className="relative h-dvh overflow-hidden md:flex">

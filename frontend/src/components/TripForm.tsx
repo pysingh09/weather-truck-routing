@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PlaceInput from './PlaceInput'
 import { roundUpToNextHour, toLocalInputValue } from '../lib/format'
+import { parsePrefill } from '../lib/urlParams'
 import type { PlanRequest, Place } from '../lib/types'
 
 const PRESETS = [20000, 35000, 45000]
@@ -13,11 +14,12 @@ interface Props {
 }
 
 export default function TripForm({ loading, fieldError, onSubmit }: Props) {
-  const [origin, setOrigin] = useState<Place | null>(null)
-  const [destination, setDestination] = useState<Place | null>(null)
-  const [departure, setDeparture] = useState(() => toLocalInputValue(roundUpToNextHour()))
-  const [load, setLoad] = useState(38000)
-  const [interval, setIntervalMi] = useState<PlanRequest['interval_mi']>(25)
+  const [prefill] = useState(() => parsePrefill(window.location.search))
+  const [origin, setOrigin] = useState<Place | null>(prefill.origin ?? null)
+  const [destination, setDestination] = useState<Place | null>(prefill.destination ?? null)
+  const [departure, setDeparture] = useState(() => toLocalInputValue(prefill.departure ?? roundUpToNextHour()))
+  const [load, setLoad] = useState(prefill.load ?? 38000)
+  const [interval, setIntervalMi] = useState<PlanRequest['interval_mi']>(prefill.interval ?? 25)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const [{ minDeparture, maxDeparture }] = useState(() => ({
@@ -27,8 +29,8 @@ export default function TripForm({ loading, fieldError, onSubmit }: Props) {
 
   const errFor = (f: string) => errors[f] ?? (fieldError?.field === f ? fieldError.message : undefined)
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const submit = (e?: React.FormEvent) => {
+    e?.preventDefault()
     const errs: Record<string, string> = {}
     if (!origin) errs.origin = 'Pick an origin from the suggestions.'
     if (!destination) errs.destination = 'Pick a destination from the suggestions.'
@@ -43,6 +45,15 @@ export default function TripForm({ loading, fieldError, onSubmit }: Props) {
     if (Object.keys(errs).length || !origin || !destination) return
     onSubmit({ origin, destination, departure: dep.toISOString(), load_lb: load, interval_mi: interval })
   }
+
+  // ?go=1 plans once on load (ref guard: StrictMode runs effects twice in dev).
+  const autoPlanned = useRef(false)
+  useEffect(() => {
+    if (!prefill.autoPlan || autoPlanned.current) return
+    autoPlanned.current = true
+    submit()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const inputCls = (f: string) =>
     `w-full rounded-lg border bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400 ${errFor(f) ? 'border-red-400' : 'border-slate-300'}`
