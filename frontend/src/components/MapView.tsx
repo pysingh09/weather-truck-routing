@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Map, { Layer, Marker, Popup, Source } from 'react-map-gl/maplibre'
 import type { MapLayerMouseEvent, MapRef } from 'react-map-gl/maplibre'
+import { setWorkerUrl } from 'maplibre-gl'
 import type { ExpressionSpecification, LineLayerSpecification, CircleLayerSpecification } from 'maplibre-gl'
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import type { FeatureCollection } from 'geojson'
 import MapEffects from './MapEffects'
 import { buildCheckpointsGeoJSON, buildHeatmapGeoJSON, buildSegmentsGeoJSON, heatWeightExpression } from '../lib/geojson'
@@ -10,6 +12,10 @@ import { formatLocalTime } from '../lib/format'
 import { getTime } from '../lib/timeStore'
 import { riskColor, riskLabel, riskMatchExpression } from '../lib/risk-colors'
 import type { HeatmapResponse, PlanResponse, Route } from '../lib/types'
+
+// maplibre-gl v6 looks for its worker next to its own module URL. Vite bundles the
+// library into assets/ without emitting the worker, so point at an emitted copy.
+setWorkerUrl(maplibreWorkerUrl)
 
 const STYLE = 'https://tiles.openfreemap.org/styles/positron'
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] }
